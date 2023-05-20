@@ -1,0 +1,357 @@
+Title: Leveraging LLMs on your domain-specific knowledge base | by Michiel De Koninck | May, 2023 | ML6team
+-----------------------------------------------------------------------------------------------------------
+
+Write
+2
+Leveraging LLMs on your domain-specific knowledge base
+With RAG to Riches: wielding the power of LLMs using Retrieval-Augmented Generation to talk to your data
+
+Michiel De Koninck
+
+·
+
+Following
+
+Published in
+
+ML6team
+
+·
+10 min read
+·
+May 8
+
+150
+
+1
+
+Ask ChatGPT a question about the origin of the word “marathon” and it will accurately tell you how Herodotus described the legendary 42km run that Pheidippides completed from Marathon to Athens before collapsing from exhaustion.
+
+But what about my grandmother’s list of recipes? Sure, I can digitise those recipes, no problem. But what if I want to have advice on what meal to prepare based on the ingredients in my fridge, my favourite color and my mood for the day?
+
+Let’s see if that’s possible without collapsing from exhaustion.
+
+LLMs, meet your limits … and exceed them
+
+An LLM is a Large Language Model. OpenAI’s GPT-4 is one example, Meta’s LLamA is another. We make the conscious choice here to stick to the general LLM term to refer to these models. Bear in mind: each of these models were trained on a gigantic set of (publicly available) data.
+
+It has been clearly demonstrated by now that these LLMs have a meaningful understanding of general language and that they are able to (re)produce information relevant to the information that was present in their training data. This is why generative tools like ChatGPT perform astonishingly well at answering questions about topics that the LLM encountered during its training.
+
+But what remains out of the direct grasp of those massive LLMs is the data that is so valuable within each organisation: the internal knowledge base. The question that thus massively pops up is:
+
+How can we leverage the power of these LLMs in unlocking information stored in a specific knowledge base upon which it wasn’t originally trained?
+
+Oh okay, so to do this, can’t we just introduce our internal knowledge base as extra data upon which the LLM should be trained? Or, if you will, can we fine-tune the LLM on our specific knowledge base.
+
+Yes, you most likely can. But for reliable question answering, it might not be the way to go.
+
+Why fine-tuning won’t always cut it
+
+Meet Billy the Bookworm. Billy is a large language model and he has devoured a gigantic amount of online information, empowering with enormous knowledge. Billy however, smart as he is, has not read through the books in your very specific home library.
+
+Fine-tuning is this: presenting Billy the Bookworm with all the books in your very specific knowledge base and letting him gobble up all that tasty extra information. This way, the LLM bookworm Billy doesn’t just know all of that general information, he also “knows” a lot about the contents of your specific knowledge base.
+
+Classical approach of fine-tuning on domain specific data (all icons from flaticon)
+
+Congratulations, through this fine-tuning proces you’ve turned Billy into a very specific Billy that knows so much about your specific domain! Below we show how you could start putting Billy to work. By posing questions to your improved bookworm, you can expect answers that use both the information from its gigantic general training set and information stored in your specific knowledge base.
+
+Leveraging the fine-tuned LLM to ask questions about your internal knowledge base.
+
+While certainly powerful, the crucial problem with this solution approach, is that you still have little insights into how your bookworm came up with its answers. Moreover, fine-tuning an LLM has its (costly) consequences.
+
+We list the main reasons why fine-tuning Billy comes up short:
+
+No source clarity. It’s difficult to prevent hallucination and your LLM has no clear distinction between “general” and “specific” knowledge.
+No access restriction. Imagine a case where some users should be able to query the information of strategic documents while others shouldn’t. How would you tackle this? Your fine-tuned Billy just knows everything, he can’t choose to leave out knowledge at inference time.
+Hosting an LLM is costly. Once you have a fine-tuned LLM, you have to keep it spinning. A large language model is well… large. Costs to keep it up and running will rack up. Do the benefits outweigh those costs?
+Fine-tuning repetitions. Model retraining is required when you want the model to reflect changes to the knowledge base.
+
+Luckily, all these problems are solvable. If answering questions in a verifiable way and preventing hallucination is what you are looking for: you may not need the hyper-modern bookworm, let’s just ask the good old librarian where to find the answers to your questions.
+
+With RAG to Riches
+
+The idea behind Retrieval-Augmented Generation (RAG) is quite straight-forward. Remember, the goal is to unlock the information in our knowledge base. Instead of unleashing (i.e. fine-tuning) our bookworm on it, we comprehensively index the information of our knowledge base.
+
+By indexing the embeddings of your internal knowledge base, you unlock smart search capabilities.
+
+In the schema above, we illustrate how the Smart Retriever functions like a librarian. Ideally, the librarian has perfect knowledge of what is in his library. For a visitor asking a certain question, he would know just which chapter of which book to recommend.
+
+On a more technical level, this describes a semantic search engine. In this case, the embeddings are vectorial representations of document sections and they allow a mathematical description of the actual meaning stored in each section. By comparing embeddings, we can determine which text sections are similar in meaning to which other text sections. This is crucial for the retrieval process displayed below.
+
+Through leveraging our Smart Retriever, we can force our generator to stick to the content of our knowledge base that is most relevant for answering the question. Et voilà: Retrieval-Augmented Generation.
+
+In play are two crucial components:
+
+The Smart Retriever (i.e. the librarian)
+The Generator (i.e. the bookworm)
+
+It should be clear by now why this approach is called Retrieval-Augmented Generation. Based on the question asked, you first retrieve the most relevant information from your internal knowledge base; you then augment the typical generation phase by passing that relevant information explicitly to the generator component.
+
+Key highlights of this RAG-based setup
+Clear indication of the source upon which the answer was based. Allowing for validation of the answer returned by the generator.
+Very unlikely to hallucinate, by restricting our generator component to the corpus of our knowledge base, it will admit it can’t formulate a response when no relevant sources were found by the retriever.
+Maintainable Search Index. A knowledge base is a living thing, when it changes, we can adapt our Search Index to reflect those changes.
+
+Aside from those highlights, the multi-lingual aspect of LLMs is a thing of beauty. You can have a knowledge base consisting of purely Italian recipes which your pasta-loving French friend can talk to in an all-French dialogue.
+
+Fine-tuning revisited
+
+Note that in the section above, we dismissed fine-tuning as a valuable option because we had little control on source clarity thus increasing the risk for hallucination.
+
+It must be noted that the RAG approach, powered by a general LLM, only works well as long as the specific knowledge base does not contain super specific jargon that the LLM can’t understand from its general training.
+
+Imagine you need the responses of your solution to follow ‘the tone and lingo’ that is present in your knowledge base. In this case the fine-tuning of your LLM seems less avoidable.
+
+It could be a valid approach to be able to handle specific jargon and then incorporate your fine-tuned LLM in the RAG architecture to reap the combined benefits. Instead of working with a general bookworm, you would then use your specifically trained Billy to power the Generator and/or the Smart Retriever components.
+
+Why now? What’s new?
+
+Excellent question.
+Semantic Search (smart retrieval) has been around for quite some time and so has generative AI (some primitive forms have been around for decades).
+However, we have seen pivotal advancements over the last months.
+
+On a technological level, we’ve recently witnessed big leaps forward in LLM performance. These positively impact the RAG solution on two levels:
+
+Embeddings (e.g. Embedding API by OpenAI or Google’s PaLM)
+Generative capabilities (e.g. OpenAI’s ChatGPT solution)
+
+Accompanying that improved generative quality is the increase in traction. Previously, companies could not easily imagine the opportunities of a system relying on generative AI. Now however, thanks to the wide media coverage and adoption of tools like ChatGPT, overall interest has grown exponentially.
+
+So, though arguably mediocre versions of RAG might have been possible for quite some time, technological improvements and increased traction result in a fruitful market opportunity.
+
+Challenges on your way to success
+
+In this section, we aim to introduce you to some of the main challenges with setting up a successful RAG solution.
+
+Strong dependency on the performance of the Smart Retriever.
+The quality of the responses given by your Generative Component will depend directly on the relevancy of the information handed to it by the Smart Retriever. As mentioned above, we can thank LLM advancements for giving us rich and powerful text embeddings. But fetching these embeddings purely via API’s may not be your best option. You should be very conscious when designing your Semantic Search component, perhaps your knowledge base has specific jargon and you might need a custom fitted (i.e. fine-tuned) component to handle it. A more in-depth practical guide on Semantic Search can be found in this blogpost [1] .
+Trade-off to be made in restriction to stick to info in knowledge base.
+As explained in the RAG architecture, we can force our LLM generative component to restrict itself to the information found in the relevant documents. While this ensures that hallucination (i.e. non-sensical answers) has little chance, it also means you are barely leveraging the information your LLM possesses. You might want your solution to use that knowledge as well but maybe only when requested by the user.
+Conversational design to allow complex dialogue.
+While our depictions above have represented the user behaviour as asking merely a “one-shot question”, often your user might want to zoom in on the answer provided by your solution (in a ChatGPT-style conversation). Luckily, tools exist to aid you in this battle. The langchain framework offers a helping hand in getting this just right.
+Prompt engineering as a way to steer generation toward succes.
+To get the answer of your generative component just right, you need to tell it exactly what kind of output you expect. Overall, this is far from rocket science. But getting your prompt setup just right for your use case takes time and deserves enough attention. It may be worthwhile looking at prompt management systems to make sure you can keep track of which prompting works best for which situations.
+Choosing the right LLM: what does it cost and where does my data go?
+Throughout this text, we haven’t made any explicit choice regarding what LLM(s) to use in your solution. When choosing which LLM (API) to use, make sure to take privacy and cost restrictions into consideration. There are quite some decent options out there already. We have OpenAI’s GPT, Meta’s LLaMA, Google’s PaLM and with Elon Musk claiming to join the LLM scene, who knows where things will go. The exciting news is: more options will come and competition should drive LLM performance up and prices down.
+Getting and keeping your LLM solution in production (LLMOps).
+As with all mature AI solutions: building them is one thing, getting/keeping them in production is another. The field of LLMOps focusses on the operationalisation of LLMs. Monitoring the performance of your LLM-based solution, keeping your knowledge base and search index up-to-date, processing conversational history…
+Before flinging your LLM solution into production, think wisely about how to maintain it and how to keep it fruitful in the long run.
+
+Charmed by the potential of RAG and intrigued by the related challenges, we now move on to looking at an actual RAG-based solution.
+
+Getting your hands dirty with RAG
+
+If your interest is sparked by the concept of Retrieval-Augmented Generation, you may be asking yourself:
+
+Do I have what it takes to take a RAG-based solution for a spin?
+
+Well, if you have:
+
+specific knowledge: a moderate (preferably organised) database of “knowledge articles” that contain useful information that is not easily found on the world-wide web (e.g. technical documents, onboarding guidelines, handled support tickets…)
+business value: a clear definition of business value if that information could be unlocked for the intended users
+
+Then yes, RAG might be the way to go for you.
+
+As an experiment, we recently built a small demo to showcase how this technology can be leveraged to support government staff in answering parliamentary questions more easily.
+In this case, the specific knowledge consists of:
+
+a set of Flemish legislative documents
+a set of parliamentary questions of the past
+
+The business value, meanwhile is in:
+
+improving efficiency by automatically suggesting answers to parliamentary questions based on the Flemish knowledge base
+improving transparency and user adoption through explicit citations
+Screenshot of demo solution built around the case of “application to help answer parliamentary questions”
+
+If you are looking for some guidelines on how to technically implement a similar solution, stay tuned for a follow-up blogpost where we aim to zoom in on the technical details of setting up RAG.
+
+References
+Mathias Leys (May 9, 2022) Semantic search: a practical overview https://blog.ml6.eu/semantic-search-a-practical-overview-bf2515e7be76
+Artificial Intelligence
+Large Language Models
+Semantic Search
+Fine Tuning
+
+150
+
+1
+
+Written by Michiel De Koninck
+28 Followers
+·
+Editor for
+
+ML6team
+
+Mathematical Engineer with a healthy knack for the world of AI.
+
+Following
+More from Michiel De Koninck and ML6team
+
+Mathias Leys
+
+in
+
+ML6team
+
+Dynamic pricing in practice
+How to create a dynamic pricing engine in practice
+11 min read
+·
+Jan 5
+
+102
+
+3
+
+Mathias Leys
+
+in
+
+ML6team
+
+The Art of Pooling Embeddings 🎨
+In this blogpost we will discover the complexity of pooling that hides behind its apparent simplicity.
+8 min read
+·
+Jun 20, 2022
+
+174
+
+2
+
+Sebastian Wehkamp
+
+in
+
+ML6team
+
+A practical guide to anomaly detection using Anomalib
+A short guide on unsupervised anomaly detection and how to apply it using Anomalib.
+10 min read
+·
+Mar 31, 2022
+
+105
+
+2
+
+Mathias Leys
+
+in
+
+ML6team
+
+Decoding Sentence Encoders 🔐
+In this blogpost, we will dive into the world of sentence transformers, regular transformers, bi-encoders and cross-encoders.
+8 min read
+·
+Jun 13, 2022
+
+181
+
+4
+
+See all from Michiel De Koninck
+See all from ML6team
+Recommended from Medium
+
+Steve Yegge
+
+We’re Gonna Need a Bigger Moat
+Everyone making SaaS on LLMs, including coding assistants like Cody and Copilot, was rocked by the AI news events of last week.
+13 min read
+·
+May 11
+
+850
+
+9
+
+Ameer Hakme
+
+Unlocking Context-Aware Insights in Tabular Data with LLMs and LangChain
+Build a Basic App for Interacting with Numerical Tabular Data through Natural Language Processing using LangChain agents and LLMs
+13 min read
+·
+Apr 20
+
+37
+
+Lists
+What is ChatGPT?
+9 stories
+·
+36 saves
+Staff Picks
+307 stories
+·
+69 saves
+
+Clive Thompson
+
+The Devious Genius of “Prompt Injection Attacks” on Today’s Big Language Models
+An old trick, revamped for the new age of AI
+·
+6 min read
+·
+May 12
+
+3.2K
+
+19
+
+Jeremy Sapienza
+
+in
+
+Data Reply IT | DataTech
+
+Pills of AI 101: The Synthetic Data
+When having data scarcity is not a problem
+7 min read
+·
+4 days ago
+
+44
+
+dp
+
+Building Custom Relation Extraction (RE) Models — Part 2
+Fine-tune a transformer using the custom labeled dataset from Part 1 to classify relationships between two named-entities
+3 min read
+·
+6 days ago
+
+39
+
+Carlos Giraldo
+
+Knowledge base with OpenAssistant, Langchain and OpenSearch in OCI
+The aim of this post is to explain some of the work I’ve been doing using Langchain to process a document and answer questions about its…
+3 min read
+·
+May 10
+
+8
+
+See more recommendations
+
+Help
+
+Status
+
+Writers
+
+Blog
+
+Careers
+
+Privacy
+
+Terms
+
+About
+
+Text to speech
