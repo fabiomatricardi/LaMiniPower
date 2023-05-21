@@ -1,0 +1,730 @@
+Okay.
+
+In this video, I'm going to look at
+LaMini-LM a diverse heard of distilled
+
+models from large-scale instructions.
+
+so this is based on a paper.
+
+but they've also released a code for this
+and they've released a data set for this.
+
+I will preface this video at
+the start that if you're just
+
+here to find out if this is the
+latest best large language model.
+
+This is not the latest,
+best large language model.
+
+In fact, all these models
+are very tiny by design.
+
+And so if you're just here for that,
+this is probably not the video for you.
+
+Okay.
+
+but this is a super interesting paper
+and a super interesting project.
+
+So I definitely want to sort of
+cover it and have a look at some
+
+of the things that they raise.
+
+And then also we'll have a look
+at the models and we'll have a
+
+look at you know, some of the
+code and stuff behind it as well.
+
+So the key idea here is that what
+they're basically trying out is
+
+that okay, what happens if you go
+for a really small model but you
+
+use a lot more scaled instructions.
+
+So if you think back to alpaca, alpaca
+only had like 52,000, instructions.
+
+The base model LLaMa
+was a very large model.
+
+That was a 7 billion parameter model.
+
+but the number of instructions from
+Alpaca itself, we're actually very small.
+
+So the idea here is to do the inverse
+of that, of go for a small model, but
+
+with a lot of distilled instructions.
+
+So, okay what are they actually doing?
+
+here, if we look at this diagram, can
+sort of see that they're basically,
+
+they've got some seed instructions.
+
+They then use, GPT- 3.5 turbo API
+to generate synthetic instructions.
+
+and add those and then they generate
+synthetic responses to this.
+
+And they're dataset gets really big.
+
+So they've released the dataset here.
+
+And they've gone right up to
+sort of 2.5, 8 million pairs of
+
+instructions and responses for this.
+
+Now they've used, the alpaca dataset.
+
+They've used the self instruct
+dataset they've used P3.
+
+they've used the original flan
+dataset as all sort of ways
+
+to generate more instructions.
+
+and if we have a look, we can see
+that, you know, they've actually
+
+released the dataset on hugging face.
+
+so if you want it to actually come
+down and train your own big model.
+
+this is something you certainly can do.
+
+So here they point out, they give
+some a little bit, info about it.
+
+Then they show that they've actually
+trained a lot of models here.
+
+So we can see that they've trained quite
+a few Flan T5, the Cerebras models,
+
+which I did a video about, even things
+like GPT-2 which is kind of insane
+
+because that model is like super old now.
+
+they've gone back and trained
+up, you know, versions of that,
+
+that use these instructions.
+
+And this is one of the models that
+we're going to look at, in here.
+
+and they've also got
+other models on the way.
+
+So the GPT-J and the LLaMa
+models, I guess, are training.
+
+those are definitely gonna take, you
+know, for the LLaMa models are gonna
+
+take quite a while to train with this 2.5
+million, dataset that they've got here.
+
+So let's just jump into the paper
+and have a look at what's going on
+
+here  and see what they're doing.
+
+So they've got the same diagram as
+what they've got in GitHub here.
+
+But, here we obviously go
+into a lot more details.
+
+So there's sort of proposing this idea
+
+of, if you went for a smaller
+model, but a much larger dataset
+
+for the fine tuning of this.
+
+And so they look at, what sort of out
+there, they talk a bit about, the alpacas,
+
+all the models that have come after that
+with in the seven to 13 billion range.
+
+And they propose that they're
+going to go for, you know, models
+
+that are much smaller than that.
+
+So here, they basically talk about
+that they're going to go for a dataset
+
+size of 2.58 million instructions.
+
+And this is a large part
+of what the paper is about.
+
+The fine tuning of models
+and stuff is interesting.
+
+And their evaluation is also
+interesting, but really it's about
+
+how did they make this dataset?
+
+because I think there were a lot of
+lessons that we can take away from this
+
+ourselves to make datasets for ourselves.
+
+They tell us that this was
+made using the GPT 3.5 turbo.
+
+and the idea is this is going to
+generate supplementary instructions.
+
+And they took about, there are two
+types of instructions that they use, the
+
+example guided instruction generation,
+and topic guided instruction generation.
+
+So the cool thing in here is they're got
+quite good descriptions of what they do.
+
+They even give you the prompts for this.
+
+And I threw the scene to, ChatGPT.
+
+And we can have a look at
+actually, how does this go?
+
+So you can see here that
+they provide three examples.
+
+and they put example tags around
+these and then they basically
+
+say generate 20 diverse examples.
+
+So this is the first way of generation.
+
+this is basically just generating more
+examples based on giving it some examples.
+
+and here they just saying generate
+20 diverse examples that are
+
+similar to the provided examples.
+
+You do not need to provide a
+response to the generated examples.
+
+Each example must include an instruction.
+
+Each generated instruction can either
+be an imperative sentence or a question.
+
+And then basically tells us, you know, how
+it's going to export it with these tags.
+
+And sure enough, you can see
+if we dropped that into ChatGPT
+
+it generates out, examples
+quite well with this.
+
+So that's the first
+generation that they do.
+
+This was the example guided instruction
+generation that they've got in there.
+
+The second turn of generation that
+they've got in here is the topic
+
+guided instruction generation.
+
+So here they've got a really nice idea
+what they do is they go to Wikipedia.
+
+And they collect, topics from Wikipedia.
+
+So, first off Wikipedia has 2.2
+million topics but what they do
+
+is they filter these based on a
+number of different requirements.
+
+so first off the topic must
+have less than three words.
+
+they make the point that, if it has
+less than three words, it's generally
+
+going to be a more sort of general
+topic that we'll have sub topics.
+
+And that's one of the things
+that they want is they want it to
+
+have at least, more than 10 sub
+categories or sub topics in there.
+
+And 50 pages of information.
+
+So they know that this is really
+not just a niche thing this
+
+is a proper category in this.
+
+Once they go and do that filtering,
+you can see that they end up with
+
+three and a half thousand categories
+that serve as common topics.
+
+They then basically use a
+prompt to generate examples
+
+based on these kind of topics.
+
+So if we go back and look at the next
+example in, ChatGPT, we can see that this
+
+is using some examples like before, but
+now It's now giving it actual topics and
+
+here we can see the topics are you know,
+these design bureaus, we've got infantry.
+
+so this is the idea here is
+that, it will now generate,
+
+Examples based on these particular topics.
+
+and you can see sure enough it does,
+That we can see straight away, what
+
+are the key factors to consider when
+choosing a design bureau for your project?
+
+Have a design bureau has
+evolved over the past decade.
+
+We see like a whole bunch
+of different things.
+
+What are some of the most interesting
+characteristics of infantry soldiers?
+
+So this is getting examples
+that are on topic for this.
+
+They then basically use the GPT-3.5
+turbo API to generate responses.
+
+they then cluster those to see, okay,
+how do these compare in diversity
+
+compared to the original data sets?
+
+And you can see here, they've basically
+got some diagrams of them doing the
+
+clustering after that, they go on
+to basically, train up some models.
+
+And, run them on a set
+of downstream tasks.
+
+And so they've got some really
+interesting ideas here that they
+
+comparing not only, Similar kinds
+of decoder models or GPT models.
+
+They also compare it to the flan models,
+the T5 models, the encoder-decoder models.
+
+and so they've got some
+interesting points here.
+
+About what they found, you know, which
+kinds of models outperform other models.
+
+So they talk about the encoder decoder
+y language models outperform the decoder
+
+models where, for right when things are
+roughly the same parameter size in there.
+
+they mix, you know, a really amazing
+statement that this LaMini Flan
+
+T5 248, even outperforms LLaMa 7
+billion on downstream in NLP tasks.
+
+So that would be the LLaMa that's
+not been fine tuned, obviously.
+
+so obviously this fine tuning of the
+flan is doing better than the raw
+
+LLaMa, model there.
+
+they also basically point out,
+you know, some things about
+
+the, GPT, what they calling the
+LaMini-GPT, which is the GPT-2 model.
+
+And, they compare them
+to the Cerebras models.
+
+Turns out that sure enough, just as
+we looked at when we looked at the
+
+Cerebras models in the video that
+probably those models weren't that great
+
+as base models for this kind of thing.
+
+and that surprisingly GPT-2 seems to
+have done better than some of those.
+
+can we say, you know, generally vanilla
+GPT 2 also out performs Cerbras-GPT models
+
+of comparable size on downstream tasks.
+
+So let's jump into the code and have a
+look at, what these are actually have.
+
+So, like I mentioned earlier on,
+they've released the dataset.
+
+they've also released a set of different
+art models on the hugging face hubs.
+
+So we've got the some T5s.
+
+Going from tiny little models of
+61 million, right up to the biggest
+
+model in here is only the GPT-2
+model, which is 1.5 billion model,
+
+which is very small compared to
+what we've been looking at recently.
+
+So I basically decided to pick
+three of these models to try out,
+
+I've gone for the flan T5, Five.
+
+the GPT-2 model and the Neo model So if
+we jump in and have a look at this, the
+
+first one I've got here is the Neo model.
+
+And we've just got some
+simple code for doing this.
+
+This is a decoder only model.
+
+so we've got the causal language
+modeling bringing it in and we're just
+
+bringing a pipeline of text generation.
+
+and, I've just written some, little
+code to sort of just tidy up the
+
+responses as it comes out of the model.
+
+And you can see that okay first off
+we can ask it the general sort of
+
+questions that we've been asking
+is what are the difference between
+
+alpacas, Vicunas, and llamas?
+
+And you'll see that it's able
+to give us some information.
+
+Now I'm not going to say that
+this is, as good as the 7 billion
+
+models far from it, right?
+
+This is 1.3 billion, parameters
+that we're looking at here.
+
+so it's, the fact that it's even able
+to just stay on topic and stuff like
+
+that is already a win for some of these.
+
+what is the capital of England?
+
+London.
+
+write a short note to Sam Altman.
+
+So this one actually does a
+pretty decent shot at doing this.
+
+much better than you'll see then some of
+the other models that we look at later on.
+
+it's definitely getting some
+facts and some phrasing off
+
+though, when we look at this.
+
+of course, because this has been
+trained on a distilled dataset.
+
+we're going to get the, AI
+language model stuff in here.
+
+unfortunately for some of these you'll
+see that it tends to hallucinate
+
+about some of these things.
+
+I've done this one twice.
+
+First time, it didn't do very well.
+
+Second time, it did a lot better.
+
+so it is interesting that I probably
+don't see that as an AI language model,
+
+as much as I see it in the, Alpaca
+or in the Vicuna models, et cetera.
+
+my guess is probably just because of the
+diversity of the dataset and the size of
+
+the dataset means that it doesn't see this
+as often as those other models or see it.
+
+let's jump into the next one and
+just have a look at this one.
+
+So this is the GPT 1.5 billion
+
+LaMini-LM So this is
+technically the GPT-2 model.
+
+that we've got in here.
+
+Same code, et cetera for running this.
+
+we can see that this is giving us
+responses again, not kind of bad.
+
+This is a little bit bigger than the
+new one, but pretty sure the Neo is
+
+trained on more tokens than GPT-2.
+
+It's able to get some of these, right.
+
+It didn't do a great job at this.
+
+write a short note to Sam Altman,
+giving reasons to open source GPT-4.
+
+And a number of times when I ran
+this, it just said noted or it said,
+
+okay, I will do that kind of thing.
+
+here, it's sort of saying to open
+source, GPT-4 I recommend giving it
+
+a try as it has potential benefits
+for your team's development efforts.
+
+You can see that the responses
+in here are pretty good though.
+
+we would not have expected this
+maybe from a GPT, something like a
+
+dialogue GPT or something like that.
+
+That was based on GPT-2
+in the past for these.
+
+The final one that I look
+at is the flan T5 one.
+
+So this is actually half the
+size of the previous one.
+
+now this is using this is a sequence
+to sequence model obviously is an
+
+encoder decoder model for the T5 models.
+
+So we need to use the auto, model for
+sequence to sequence, LM is in there.
+
+And we need to change this
+to text to text generation.
+
+Also, I changed a little bit.
+
+They seem to have changed the
+generation out from this a little bit.
+
+so I've changed the
+filtering, function there.
+
+okay, we can see what are the differences
+between alpacas, Vicunas, and llamas.
+
+it doesn't give us a great answer,
+but it's definitely on topic here.
+
+so you could imagine that we're doing
+it sort of general model here, which
+
+is not how you would use these things.
+
+These things are more for where
+you would basically hone in on one
+
+domain and train it up on a lot of
+data for that one particular domain.
+
+and get it going for that, so
+that's something to think about.
+
+what is the capital of England?
+
+The capital of England is London.
+
+write a short note to Sam Altman,
+giving reasons to open source GPT four.
+
+and then, you know, it's sort of done
+something around it when definitely
+
+not getting the, you know, in depth
+responses that we get from over Vicuna
+
+13 billion or something But, were
+talking about something that's 20
+
+times smaller, so it's not surprising.
+
+in this case.
+
+Asking about Homer.
+
+So first off.
+
+it basically does the whole, as
+an AI, I don't have the ability
+
+to like, or dislike things.
+
+However, I'm knowledgeable about Homer.
+
+But it's quite sassy that it's not going
+to tell us what it knows about Homer.
+
+So ask it again.
+
+and then here it gets, oh yeah.
+
+I'm as a character on TV show Simpson's
+who is known for his intelligence.
+
+I'm not sure that is correct.
+
+humor and willingness to help those
+in need again not sure about that.
+
+so you can see it just different responses
+of that it gets out for those things.
+
+None of them did well on the reasoning
+questions if we if we sort of look at
+
+these i think it's the The reasoning
+when here it's basically saying that you
+
+would have 16 apples left not accurate.
+
+although it does get the bit
+about a haiku that yes that
+
+could be in a single tweet four.
+
+The neo model Again it doesn't do a good
+job with the reasoning on the apples but
+
+it does an okay job with the haiku thing.
+
+so this one also again not a
+great job at counting at working
+
+out those sorts of things.
+
+But it does know a little bit
+about haikus in this case.
+
+So anyway The goal here is not that
+these are going to replace your
+
+general purpose of Vicuna or your
+Koala model or something like that.
+
+The goal here is that these are
+showing that if you train with a lot
+
+more data even a small model can get
+decent results with this kind of thing.
+
+So you've got to think that as they
+bring out the 7 billion models and
+
+if they do them the 13 and 30 billion
+models, On this 250 million dataset.
+
+It's going to be interesting to see how
+they compare to the full Vicuna models or
+
+the Stable Vicuna those sorts of models.
+
+Anyway as always if you've got questions
+please put them in the comments if
+
+you found this useful please click
+like and subscribe I will talk to
+
+you in the next video bye for now
+
+
