@@ -1,0 +1,47 @@
+Large language models (LLMs) with instruction finetuning demonstrate superior generative capabilities. However, these models are resource intensive. To alleviate this issue, we explore distilling knowledge from instruction-tuned LLMs to much smaller ones. To this end, we carefully develop a large set of 2.58M instructions based on both existing and newly-generated instructions. In addition to being sizeable, we design our instructions to cover a broad set of topics to ensure. A thorough investigation of our instruction data demonstrate their diversity, and we generate responses for these instructions using gpt-3.5-turbo. We then exploit the instructions to tune a host of models, dubbed LaMini-LM, of varying sizes, both from the encoder-decoder as well as the decoder-only families. We evaluate our models both automatically (on 15 different NLP benchmarks) and manually. Results show that our proposed LaMini-LM are on par with competitive baselines while being nearly 10 times smaller in size.
+
+
+Large language models (LLMs) with instruction
+tuning are capable of generating remarkable outputs for a wide range of use cases. However, these models usually have billions of parameters, which require massive computational resources for both training and inference. Kaplan et al. (2020) suggest
+that the performance of LLMs scales proportionally with model and dataset size. Consequently,
+scaling the models raises many issues such as those related to the energy footprint.
+Moreover, the accessibility of large models is a real concern for many NLP practitioners due to limited access to computing resources.
+In this work, we present LaMini-LM, a collection of language models that are notably smaller
+in size than most existing instruction-tuned models. We develop LaMini-LM models by employing
+sequence distillation (also known as offline distillation) from LLMs. 
+Although similar attempts have been made in recent work, there are several gaps in this literature that we aim to address. Specifically, these works
+often  provide a small-scale distilled dataset that is not necessarily diverse, and a  limited number of models (typically only one),  without comprehensive evaluation nor analysis of the models’ performance. 
+Furthermore, many of the distilled models resulting from prior work tend to still be relatively computationally intensive. That is, parameters of these recent models usually range
+from 7B to 13B, making them difficult to deploy in resource-constrained settings especially for underresourced institutions. To alleviate these issues, we firstly generate a large-scale offline distillation dataset comprising 2.58M instructions, and then fine-tune a collection of language models to obtain the LaMiniLM models, as shown in Figure 1. 
+We collate instructions from various prior datasets such as
+self-instruct, P3, FLAN and Alpaca. Additionally, we use ChatGPT (gpt-3.5-turbo) to generate supplementary instructions, with an emphasis on diversity that adheres to the existing human-written instructions in the prompt. This approach is known as Example-Guided Instruction Generation. 
+To further increase the diversity in the generated text, we also introduce the Topic-Guided Instruction Generation method. Subsequently, we use gpt-3.5-turbo to generate responses for each instruction.
+After generating the dataset, we fine-tune several smaller language models with varying sizes
+(from 61M to 1.5B) and architectures (encoderdecoder and decoder-only). Furthermore, we compare different variations of models with the same architecture. Our work is also distinguished from previous research by providing a comprehensive evaluation of the resulting models. We assess the performance of the models on various NLP downstream tasks, in addition to manual human evaluation of the model’s outputs. This analysis offers a more in-depth understanding of the models’ strengths and weaknesses.
+Our contributions can be summarized as follows:
+1. We release a large-scale instruction dataset that contains over 2.58M examples. To the
+best of our knowledge, this dataset is the largest instruction dataset currently available
+in the NLP literature. Our instruction dataset is ×50 larger than the one released by Taori
+et al. (2023).
+2. We explore the process of distilling knowledge from LLMs to various much smaller
+model architectures, resulting in a family of distilled language models. Our largest model
+and smallest model are ×110 and ×2800 smaller than GPT-3 (Brown et al., 2020), respectively.
+3. We conduct extensive experiments on both our proposed models and several publicly available LLMs. These experiments include automatic evaluation on 15 NLP tasks and human evaluation. Both our automatic and human evaluations show that our proposed models achieve comparable performance with Alpaca while being nearly ×10 smaller in size.
+Knowledge Distillation
+Knowledge distillation is a process used to train a smaller model, referred to as the student, by learning from a larger model, known as the teacher. One of the most commonly used methods of knowledge distillation involves training the student with an additional objective of matching the teacher’s representation, such as logits, output probability, or intermediate activation. For sequence-to-sequence or generative models, Kim and Rush (2016) introduced the concept of sequence-level distillation. This approach involves generating a synthetic output by running inference with the teacher model, which is then used to train the student model. This method is more efficient as it only requires running the usually large teacher model once. Previous research has demonstrated the effectiveness of sequence-level distillation. For
+instance, Costa-jussà et al. (2022) used sequencelevel distillation to reduce the size of an NLLB machine translation system to 600M parameters. Similarly, by combining sequence-level distillation with model pruning and quantization. Bogoychev and others in 2020 managed to train a translation system that was approximately ×25 smaller than the teacher model without a significant decrease in BLEU score. In our work, we train our model on the output of gpt-3.5-turbo, which can be viewed as a sequence-level distillation approach. While other researchers also train language models based on the output of GPT models, our work is distinct in
+that we train our model on a considerably larger dataset and distilled it into much smaller models. Furthermore, we provide various student models.
+
+Encoder-Decoder vs. Decoder-Only 
+The encoder-decoder LaMini language models (LaMiniT5 series and LaMini-Flan-T5 series) outperform the decoder-only LaMini language models (LaMini-GPT series) when the number of
+parameters is limited (less than 500M parameters). LaMini-Flan-T5-248M even outperforms
+LLaMa-7B on downstream NLP tasks. When the model size is higher, LaMini-Flan-T5 is comparable to LaMini-GPT. Yet, both LaMini-Flan-T5 and LaMini-T5 demonstrate strong human evaluation
+results for user-oriented instructions, despite their relatively small size. 
+Especially, T5-based models of 200M parameters is competitive against LaMiniGPT-1.5B for human evaluation result. We recommend further exploration of the encoder-decoder architecture for language models, given their potential, as demonstrated in our experiments.
+Conclusion
+In this work, we release a large-scale instruction dataset distilled from ChatGPT with more than 2.58M examples. To the best of our knowledge, this dataset is currently the largest dataset of its kind.
+We explore distilling knowledge from LLMs to various smaller and more efficient model architectures. We refer to the resulting family of language models as LaMini, which includes 6 encoder-decoder models and 9 decoder-only models with varying model sizes. We also conduct a comprehensive evaluation in this work, including the automatic evaluation of the downstream NLP tasks and human evaluation. 
+Both evaluation strategies highlight that our proposed models achieve comparable performance
+with Alpaca  while is nearly ×10 smaller in size. This work sheds light on distilling knowledge from LLMs to much smaller model architectures and demonstrates the potential
+of training efficient yet effective language models.
+
