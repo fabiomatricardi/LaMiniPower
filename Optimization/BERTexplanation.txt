@@ -1,0 +1,106 @@
+Title: BERT: A Beginner-Friendly Explanation | by Digitate | May, 2023 | Medium
+-------------------------------------------------------------------------------
+written By Pushpam Punjabi
+author Pushpam Punjabi
+
+Up until now, we’ve seen how a computer understands the meaning of different words using word embeddings. In the last blog, we also looked at how we can take average of the embeddings of words appearing in a sentence to represent that sentence as an embedding. This is one of the ways of interpreting a sentence. But that’s not how humans understand the language. We don’t just take individual meaning of words and form the understanding of a sentence or a paragraph. A much more complex process is involved to understand language by humans. But how does a machine understand language? It’s through language models!
+
+Language models are an essential component of Natural Language Processing (NLP), designed to understand and generate human language. They use various statistical and machine learning techniques to analyze and learn from large amounts of text data, enabling them to identify patterns and relationships between words, phrases, and sentences. Word embeddings form the base in understanding these sentences! Language models have revolutionized the field of NLP and have played a crucial role in enabling machines to interact with humans in a more natural and intuitive way. Language models have also surpassed humans in some of the tasks in NLP!
+
+In this blog, we will understand Bi-directional Encoder Representations from Transformers (BERT) which is one of the biggest milestones in the world on language models!
+
+Understanding BERT
+
+BERT was developed by Google in 2018. It is a “Language Understanding” model, that is trained on a massive amounts of text data to understand the context and meaning of words and phrases in a sentence. BERT uses “transformer” deep learning architecture that enables it to process information bidirectionally, meaning it can understand the context of a word based on both, the words that come before and after it. This allows BERT to better understand the nuances of language, including idioms, sarcasm, and complex sentence structures.
+
+You must be wondering how do you train such models to understand human language? There are 2 training steps involved to use BERT:
+
+Pre-training phase
+Fine-tuning phase
+1. Pre-training phase
+
+In pre-training phase, the model is trained on huge textual data. This is the stage where the model learns and understand the language. Pre-training is expensive. To pre-train a BERT model, Google used multiple TPUs — special computing processors for deep learning models. It took them 4 days to pre-train BERT on such a large infrastructure. But this is only a one-time procedure. Once the model understands the language, we can reuse the model for variety of tasks in NLP. There are 3 steps to pre-train BERT:
+
+Text corpus selection
+Masked Language Modeling
+Next Sentence Prediction
+
+Let’s go through each step in detail.
+
+1.1 Text Corpus Selection
+
+Before I talk about data, we must understand that these models are huge is size. Not only the size on the disk, but the mathematical parameters we need to calculate inside these deep learning models as well. To give you some perspective, the largest BERT model is of size 1.4 GB on disk, if it is saved as a binary file!
+
+For the text corpus selection, you need to have some considerations around the text you want to use:
+
+· Size of the corpus
+
+· Domain of the text
+
+· Language of the text
+
+For BERT, we stick to English language. BERT is trained on combination of 2 datasets, the whole English Wikipedia dump, and BookCorpus, which is collection of free ebooks. These datasets are general datasets, which do not talk about any specific domain. If the raw text of these datasets would be stored in a .txt file, then the size would be in GBs!
+
+To train any deep learning model, we need annotated data. The dataset which we have mentioned is just raw text. To annotate such a huge text data for any task, a lot of manpower would be required. The researchers have designed a self-supervised way to create 2 tasks and train the transformer model on those tasks.
+
+1.2 Masked Language Modeling
+
+BERT is first trained as a Masked Language Model (MLM) to understand a sentence in both directions of context — left to right and right to left. Essentially, BERT is given an input sequence, where 15% of the words are masked. The task for BERT is to predict these masked words, by reading both, the left-side, and the right-side context of the masked word.
+
+In this example, 2 words are masked — store and gallon. BERT must predict both the words correctly. These 15% of the words are randomly selected. Thus, in a self-supervised manner, all the raw text is now annotated for the task of predicting masked words.
+
+One of the benefits of MLM is that it enables BERT to understand language in a more natural and nuanced way. By predicting the missing words in a sentence, BERT can better understand the context and meaning of the words that are present. This can be especially useful for applications such as sentiment analysis, where understanding the meaning and tone of a sentence is crucial for accurately interpreting its sentiment.
+
+1.3 Next Sentence Prediction
+
+Masked Language Modeling helps BERT in understanding the relationship between words. But what about relationship between various sentences in a paragraph? The task — Next Sentence Prediction helps BERT in understanding relationship between the sentences. This is a simple task which can be generated in a self-supervised way, from any text corpus. The task: Given two sentences A and B, is B the actual sentence that comes after A, or just a random sentence from the text data?
+
+Next sentence prediction is a useful technique for a variety of NLP tasks. By understanding the relationships between sentences, BERT can better understand the overall meaning and context of a passage of text. This can be especially important for applications such as chatbots or virtual assistants, where the ability to understand and interpret human language is crucial for providing accurate and helpful responses.
+
+2. Fine-tuning phase
+
+After we have pre-trained the BERT model, we can now fine-tune it for any task in NLP. We can now use domain specific dataset in the same language to take advantage of the learnings and understanding of the model for that language. We don’t require a large dataset now for fine-tuning a BERT model. Thus, this process is inexpensive — A few hours on a single GPU would suffice for fine-tuning the model.
+
+The goal of fine-tuning is to further optimize the BERT model to perform well on a specific task, by adjusting its parameters to better fit the data for that task. For E.g., a BERT model that has been pre-trained on a large corpus of text data can be fine-tuned on a smaller dataset of movie reviews to improve its ability to accurately predict the sentiment of a given review.
+
+Fine-tuning a BERT model is a powerful tool for a variety of NLP applications, as it enables the model to be tailored to specific tasks and datasets. By fine-tuning a BERT model, researchers and developers can achieve higher levels of accuracy and performance on specific tasks, which can ultimately lead to more effective and useful natural language processing applications.
+
+Domain specific pre-training
+
+We used a generic English language text dataset to pre-train the BERT model. This gives us an edge as the model understands the language, but it doesn’t understand the domain. E.g., if we want to use a language model in medical domain, then it must understand meaning and context of the medical terms, procedures, etc.
+
+For this, we can pre-train the model on a very specific domain, like medicine, in the same language. This increases the accuracy further when we fine-tune the model for a specific task, in the same domain. One of the examples of such a language model is BioBERT. BioBERT is a language model which is pre-trained on huge biomedical text corpus. It has shown increased accuracies over generic BERT on tasks involving biomedical domain. Similarly, we can pre-train the BERT model on text of any domain, which is required by the business usecase.
+
+Advantages
+
+· BERT is a highly effective natural language processing model that has achieved state-of-the-art results on a wide range of tasks.
+
+· BERT uses a unique “transformer” architecture that enables it to better understand the context and meaning of words and phrases in a sentence.
+
+· BERT can be fine-tuned on specific tasks and datasets, which allows it to be tailored to specific applications and achieve even higher levels of accuracy.
+
+· BERT is open source and widely available, making it accessible to researchers and developers around the world.
+
+Limitations
+
+· BERT requires significant computational resources to pre-train and relatively significant resources to fine-tune, which can be a barrier to entry for smaller research groups or individuals.
+
+· BERT is trained on large amounts of text data, which can make it difficult to apply to domains or languages with limited data available.
+
+· BERT can sometimes struggle with understanding context that is not explicitly stated in the text, such as background knowledge or cultural references.
+
+· BERT is a language model, and as such, it may struggle with tasks that require more than just language understanding, such as tasks that involve visual or audio information.
+
+Applications
+
+One of the applications of BERT is extractive question answering. BERT can be fine-tuned on a dataset of question-answer pairs, to enable it to accurately answer questions posed in natural language. Along with these pairs, a passage is provided as a reference, from which the answer is extracted for the given question.
+
+A BERT model fine-tuned on question answering dataset could be used to answer such factual questions and providing the correct answer based on the context of the question. This has many potential real-world applications, such as in customer service chatbots or virtual assistants that can provide users with accurate and helpful responses to their questions.
+
+ignio leverages pre-trained transformers for usecases of different domains. Example usecases include: IT security domain to automatically fill up security surveys, legal domain to analyze contracts and NDAs to automatically flag acceptable and unacceptable clauses, extracting information from data sources to capture different aspects of enterprise context, and mapping trouble tickets to ignio’s automation catalog to identify tickets that can be auto-resolved by ignio.
+
+
+About Pushpam Punjabi, the author
+
+Pushpam Punjabi is a Machine Learning Engineer who develops solutions for the use cases emerging in the field of Natural Language Processing (NLP)/Natural Language Understanding (NLU). He enjoys learning the inner workings of any algorithm and how to implement it effectively to solve any of the posed problems.
+

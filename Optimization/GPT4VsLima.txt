@@ -1,0 +1,34 @@
+Title: GPT-4 vs LIMA: Rethinking Large Language Models for Efficiency and Performance | by Amir Shakiba | May, 2023 | Medium
+
+GPT-4 vs LIMA: Rethinking Large Language Models for Efficiency and Performance
+written by Amir Shakiba
+
+
+A recent paper by Meta AI has the potential to revolutionize our understanding of large language models (LLMs).
+
+To delve into their workings, let’s take a closer look at Meta AI’s LLAMA model. (you can jump straight to LIMA if you want)
+
+LLAMA
+
+LLMs, which are trained on vast amounts of text, have given us impressive results. Initially, it was believed that bigger models are necessary for better performance. However, recent papers suggest that smaller models trained on more data can actually deliver better results, challenging the notion of model size. Importantly, practical considerations come into play. In terms of production efficiency, it is more advantageous to train a smaller model for a longer duration, rather than opting for a larger model trained in a shorter time frame that requires more GPU resources during inference.
+
+smaller models on larger datasets means less cost and more affordability leading to democratization of AI which OpenAI is really concerned about!
+
+This is where LLAMA models come in. Despite having fewer parameters compared to GPT-3 models, LLAMA models can run on a single GPU. Additionally, LLAMA models are exclusively trained on openly accessible datasets, in contrast to other systems like ChatGPT, which rely on data that is not publicly available.(openAI or closeAI?:)
+
+LIMA
+
+Now let’s shift our focus to LIMA, a new LLAMA model developed by Meta AI. LLMs undergo two distinct stages of training. Firstly, they are trained on massive amounts of data to acquire general-purpose representations. Secondly, instruction tuning or reinforcement learning is employed to guide the model for specific tasks. Notably, reinforcement learning from human feedback (RLHF) has been championed by OpenAI as a crucial aspect of training models like ChatGPT. However, this new study suggests that RLHF has limited impact on training. The majority of learning occurs during pretraining and training on the massive text corpus.
+
+If humans are not even needed for their feedback ,what makes them useful?
+
+LIMA, a 65B-parameter LLAMA model, stands out as it is trained on only 1,000 precise prompts. Remarkably, LIMA achieves competitive results comparable to GPT-4, Claude, or Bard. This highlights the power of pretraining and diminishes the significance of large-scale instruction tuning and reinforcement learning approaches.
+
+In summary, Meta AI’s research sheds light on the potential of LLAMA models and challenges the conventional understanding of LLMs. The focus on training smaller models on larger datasets and the limited role of reinforcement learning in training highlight the efficiency and effectiveness of this approach. LIMA exemplifies the promising capabilities of LLAMA models and their ability to achieve impressive performance with significantly fewer parameters.
+
+our understanding of billion parameter world is too little , there’s more to discover.
+
+link to the papers:
+
+LLAMA: https://arxiv.org/pdf/2302.13971.pdf
+LIMA : https://arxiv.org/pdf/2305.11206.pdf
