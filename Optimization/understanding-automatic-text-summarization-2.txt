@@ -1,0 +1,149 @@
+Title: Understanding Automatic Text Summarization-2: Abstractive Methods | by Abhijit Roy | Towards Data Science
+--------------------------------------------
+source: https://towardsdatascience.com/understanding-automatic-text-summarization-2-abstractive-methods-7099fa8656fe
+
+Understanding Automatic Text Summarization-2: Abstractive Methods
+How can we use deep learning to summarize the text?
+
+author is Abhijit Roy
+
+
+This is my second article on Text summarization. In my first article, I have talked about the extractive approaches to summarize text and the metrics used. In this article, we are going to talk about abstractive summarization. We are going to see how deep learning can be used to summarize the text. So, let’s dive in.
+
+Abstractive Summarizers
+
+Abstractive summarizers are so-called because they do not select sentences from the originally given text passage to create the summary. Instead, they produce a paraphrasing of the main contents of the given text, using a vocabulary set different from the original document. This is very similar to what we as humans do, to summarize. We create a semantic representation of the document in our brains. We then pick words from our general vocabulary (the words we commonly use) that fit in the semantics, to create a short summary that represents all the points of the actual document. As you may notice, developing this kind of summarizer may be difficult as they would need the Natural Language Generation. Let’s look at the most used approach to the problem.
+
+Application of sequence-to-sequence RNNs
+
+The approach was proposed in a paper by Ramesh Nallapati, Bowen Zhou, Cicero dos Santos, Caglar Gulcehre, Bing Xiang from IBM. The term “sequence to sequence models” is used because the models are designed to create an output sequence of words from an input sequence of words. The input sequence in the considered case is the actual text document and the output sequence is the shortened summary.
+
+The paper proposes a model inspired by an attentional Recurrent Neural Network encoder-decoder model which was first proposed for machine translation by Dzmitry Bahdanau, Jacob’s University, Germany.
+
+Though, the problems are a lot different as you can already sense. Firstly for machine translation, we need the translation to be loss-less as we want the exact sentence in a translated form, but for Summary Generation, we need to compress the original document, to create the summary, so it needs to be a bit lossy. Secondly, for a summary generation, the length of the summary does not depend on the original text. These two points are the key challenges in the problem as given by the problem.
+
+Before jumping into the application details of the paper let’s look at the encoder and decoder networks and the reason for using the attention layer.
+
+Encoder and Decoder Networks
+
+If we consider a general LSTM( Long term short memory) layer, it looks something like the diagram given below. It either produces an output for every input or it creates a feature vector, which is later used by dense neural network layers for classification tasks with the application of softmax layers. For example, sentiment detection, where we pass the whole sentence through RNN and use the feature vectors which are fit to softmax layers for producing the ultimate result.
+
+But one thing to realize here is, for the current problem, or problems like this including machine translation, more generally speaking, where we can say the problem is a sequence to sequence problem, this particular model approach cannot be applied. The main reason is that the size of the output is independent of the size of the input and both are sequences. To deal with this problem the encoder-decoder network model was introduced.
+
+The model basic architecture is described by the above diagram.
+
+The encoder is responsible for taking in the input sentence or original document and generate a final state vector(hidden state and cell state). This is represented by the internal state in the diagram. The Encoder may contain LSTM layers, RNN, or GRU layers. Mostly LSTM layers are used due to the removed Exploding and vanishing gradient problem.
+
+The above diagram shows our encoder network. In the encoder network, one word is fed at a time step, and finally, after the nth input word is fed to the LSTM layer the hidden state and cell states become our final state or feature vector. The cell state Cn and the hidden state Hn are sent to the first set of the LSTM layer of the decoder.
+
+This is how our decoder model looks. Now the first layer receives the inputs from the encoder’s final states that are the hidden and cell states activations. The decoder model takes in the inputs and generates the predicted words of the output sequence, given the previous word generated. So, for LSTM at time step 1 for the decoder has 0 vector input, and Y1 is the predicted word generated, for time step 2, Y1 is fed to the LSTM layer as input and Y2 is the generated word and so on. The decoder generates the words time steps by time steps until the <end> tag is faced.
+
+This might raise a question, how are the words generated?. Well, here is the answer. The encoder-decoder model is trained on a target set or vocabulary of words. Now, in each step, of the decoder, the LSTMs hidden activation is sent through a softmax layer which generates the probabilities for each word in the vocabulary to be predicted as the next word. The word with the maximum probability is chosen as the output at that time step. Now, how does the model know which word exactly suits the semantics? For this, the model trains on a dataset and transforms the problem into a supervised classification problem. Alongside, the models, usually use word embeddings of the words in the vocabulary from well-known embedding vectors like the word2vec by google or the Glove by Standford NLP. The word embeddings help to gain several insights about the word like whether a given word is similar to a given word or not. Some times TFIDF vectorizations are also used to generate meaningfulness of context words.
+
+Let’s go by example. Say we have a dataset, which has a collection of long-form reports and their human summaries. The information can be used as labels and targets for training our encoder-decoder networks. We will vectorize our labels and targets, form a vocabulary. Next, we will pick the embeddings up from word2vec or Glove for the words in our vocabulary and then fit the labels and targets to our model for training.
+
+But this particular summarization problem has an issue. The original document can be very large. Say the document is of 100 lines. Now, when we, as humans, are summarizing from 1–5 lines, shall we need to consider the 100th line? No right? When we summarize manually we give more attention to the lines 1–5 when we are summarizing those lines, and slowly move forward. This aspect could not be implemented by the normal encoder-decoder model, So, the attention mechanism was introduced.
+
+Attention Mechanism
+
+The mechanism aims to focus on some specific sequences from the input only, rather than the entire input sequence to predict a word. This approach is very similar to the human approach and seems to solve the problem.
+
+Source
+
+The above diagram shows the implementation of the attention layer by TensorFlow. We can see the for predicting a word each word in the input sequence is being assigned a weight, called the attention weights. The summation of the vectorized attention weights is used to form the context vectors which are used for prediction.
+
+Let us examine in detail. The paper proposes the encoder to be composed of a bi-directional GRU RNN and the decoder will have unidirectional GRU RNN. Both the encoder and decoder will have the same number of hidden layers and units.
+
+Let’s see the attention mechanism here.
+
+The upper green layer shows the decoder, the Y1 and Y2 are the time step outputs. X1, X2 are the inputs to the encoder. “af0” is the forward activation of input 0 and “ab0” is the backward activation of the timestep 0 and so on.
+
+Let’s say ‘an’ is (‘abn’, ‘afn’) combined activation at timestep n, so, a0=(af0,ab0), i.e, both forward and backward combined. “Wmn” determines how much weight should be given to the input at timestep m while predicting the output at time step n of the decoder.
+
+The Context vector is the weighted sum of the attention weights. It is given by:
+
+C< n >= Sum(W<m,n>.a<m>) for all m in the input time steps.
+
+The above equation states context vector for time step n is equal to the sum of weights given to input at timestep m and the combined activation of the timestep m, for all m timesteps in the input i.e, x time steps if there are x words in the input.
+
+Now, how are the words obtained?
+
+W<m,n>= softmax(e<m,n>) for all m
+
+Where we obtain e using a neural network with a single hidden state. The network takes in S(n-1) and a(m) (Combined activation of timestep m) and gives e(m,n) as output. The neural network for obtaining ‘e’ is also trained during the training of our encoder-decoder model.
+
+We use softmax, so the sums of all the weights assigned to all the input timesteps are always equal to 1.
+
+This is the overall mechanism of the attention model.
+
+Large Vocabulary Trick
+
+We have discussed previously, the words predicted by the decoder are generated using a softmax. Now, if we use all the words in our vocabulary as our target word set, the softmax will have a huge number of output nodes, and the prediction will be computationally inefficient. The paper proposes the Large Vocabulary trick proposed by Sebastien Jean, University of Montreal to solve this issue. The model is trained in mini-batches. The target word set or the decoder-vocabulary of each minibatch is restricted to the source document of that particular mini-batch. Now, if we use different subsets of decoder-vocabulary for each mini-batch, there is a chance that the target vocabulary becomes unequal in length, which is very obvious, as different samples have different numbers of lines and a different number of words. So, we add the most frequent words in the total vocabulary to the subset vocabularies to make them of fixed size. This decreases the time requirements and fastens the convergence as with the decrease in target set size the softmax layer also shortens.
+
+Extraction of keywords
+
+Previously, when we discussed the encoder-decoder model, I had mentioned that we normally use word embeddings to represent the words in the documents after vectorization. Now, let’s try to think about what we actually need the words to indicate in order to summarize. We will realize that the embeddings are not enough, because for summarization we need to focus on the context and the keywords in the piece of text. The embeddings help to get a general idea about a word but it has nothing to do with the context of the text. So, the paper proposed to take into consideration factors like part of speech tags, named-entity tags, and TFIDF statistics of a word alongside embeddings to represent a word. We convert the continuous TFIDF values into categorical value, using bins. Finally, we take all of the features and embeddings for a word and create a new embedding for the words. So, basically the TFIDF, POS tags gives us an idea about how important are the words are in the context of the document and the word embeddings give a general idea about the word. Next, we concatenate them into a single long vector and feed to network. One thing to notice is, we use only word embeddings to represent the words in the target side.
+
+Source
+
+Next, We will look at another very important aspect proposed by the paper.
+
+Switching Generator-Pointer
+
+In Natural language handling when we train a model using a supervised model, we often need to handle some words which are not present in our vocabulary. Such words are termed as OOV or out-of-vocabulary. In normal cases, we handle them using ‘UNK’ tags. But in the case of summarizations, it will not be correct because the words may carry some significance in the summary. The paper proposes a switching decoder pointer to handle such cases. T each time step of the decoder, there is a pointer maintained to the input text. Whenever the decoder faces an OOV term, it points to a term in the input and uses the term from the input text directly. So, the decoder has basically two actions at a time step, it can generate a word from the target dictionary or it can point and copy a word. This decision is taken using a switch If the switch is turned on it generates a word else it copies a word from the input.
+
+Source
+
+Now, the question is how the switch operates? The switch is a sigmoid activation function over the entire context vector at a particular decoder time step. It is given by:
+
+Source
+
+“where P(si = 1) is the probability of the switch turning on at i th time-step of the decoder, hi is the hidden state, E[oi−1] is the embedding vector of the emission from the previous time step, ci is the attention-weighted context vector, and Ws h, Ws e, Ws c, bs and vs are the switch parameters”-Source
+
+The pointer at each time step must point to a word in order to copy the word, this is decided based on the attention weights distribution for that decoder time stamps.
+
+Source
+
+“In the above equation, pi is the pointer value at i th word-position in the summary, sampled from the attention distribution Pa i over the document word-positions j ∈ {1, . . . , Nd}, where P a i (j) is the probability of i th time-step in the decoder pointing to the j th position in the document, and h d j is the encoder’s hidden state at position j”-Source
+
+The switch is also trained during the training of the neural network. The function given below is optimized during the training.
+
+Source
+
+“where y and x are the summary and document words respectively, gi is an indicator function”-Source. The indicator function is set to 0 whenever an OOV is faced with respect to the decoder vocabulary. This turns off the switch and a word is copied from the input text.
+
+This is an overview of the sequence-to-sequence model for text summarization. I encourage you to go through the references for more implementational details.
+
+One thing to note is, the authors proposed hierarchical Attention layers for long documents. If the documents are very very long, we some times may need to identify the key sentences with the keywords. For this, we need a hierarchical attention mechanism. One level to take care of the importance of the sentence and another level for the importance of the words. The two attention layers operate at the two levels simultaneously.
+
+Source
+
+The other two most notable approaches are:
+
+Facebook’s model
+
+This approach was proposed by Alexander Rush, Facebook AI Research in 2015.
+
+Source
+
+The above diagram describes facebook’s model. It has three encoders:
+
+A bag-of-words encoder: It just uses a bag of words representation of the input sentence, and ignores the relationships with the neighboring words. The decoder takes in the encoded vector or bag of words and predicts a word at the time step.
+Convolutional encoder: Convolutional layers are used to generate feature vectors from the word embeddings of the input vectors and then decoders are used to create the words at the time step
+Attention-based encoder: This encoder words on the attention layer RNN as we discussed in the previous approach.
+
+Lastly, a beam search is applied to the results in order to obtain the summarized text.
+
+Pointer-generator model by Google
+
+This model was proposed by Abigii See from Standford university.
+
+Source
+
+I felt this model is similar to IBM’s model, but the model uses a coverage mechanism to reduce the repetitions problem of the sequence-to-sequence network.
+
+You can go through the papers for more details. I will provide the links in the reference.
+
+Conclusion
+
+In this article, we talked about several approaches by which deep learning is used for text summarization.

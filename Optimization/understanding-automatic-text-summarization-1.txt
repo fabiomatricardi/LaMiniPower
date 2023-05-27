@@ -1,0 +1,181 @@
+Title: Understanding Automatic Text Summarization-1: Extractive Methods | by Abhijit Roy | Towards Data Science
+----------------------------------------------------
+source: https://towardsdatascience.com/understanding-automatic-text-summarization-1-extractive-methods-8eb512b21ecc#
+
+Understanding Automatic Text Summarization-1: Extractive Methods
+How can we summarize our documents automatically?
+
+author is Abhijit Roy
+
+
+Text summarization is commonly used by several websites and applications to create news feed and article summaries. It has become very essential for us due to our busy schedules. We prefer short summaries with all the important points over reading a whole report and summarizing it ourselves. So, several attempts had been made to automate the summarizing process. In this article, we will talk about some of them and see how they work.
+
+What is summarization?
+
+Summarization is a technique to shorten long texts such that the summary has all the important points of the actual document.
+
+There are mainly four types of summaries:
+
+Single Document Summary: Summary of a Single Document
+Multi-Document Summary: Summary from multiple documents
+Query Focused Summary: Summary of a specific query
+Informative Summary: It includes a summary of the full information.
+Approaches to Automatic summarization
+
+There are mainly two types of summarization:
+
+Extraction-based Summarization: The extractive approach involves picking up the most important phrases and lines from the documents. It then combines all the important lines to create the summary. So, in this case, every line and word of the summary actually belongs to the original document which is summarized.
+
+Abstraction-based Summarization: The abstractive approach involves summarization based on deep learning. So, it uses new phrases and terms, different from the actual document, keeping the points the same, just like how we actually summarize. So, it is much harder than the extractive approach.
+
+It has been observed that extractive summaries sometimes work better than the abstractive ones probably because extractive ones don’t require natural language generations and semantic representations.
+
+Evaluation methods
+
+There are two types of evaluations:
+
+Human Evaluation
+Automatic Evaluation
+
+Human Evaluation: Scores are assigned by human experts based on how well the summary covers the points, answer the queries, and other factors like grammaticality and non-redundancy.
+
+Automatic Evaluation
+
+ROUGE: ROUGE stands for Recall-Oriented Understudy for Gisting Evaluation. It is the method that determines the quality of the summary by comparing it to other summaries made by humans as a reference. To evaluate the model, there are a number of references created by humans and the generated candidate summary by machine. The intuition behind this is if a model creates a good summary, then it must have common overlapping portions with the human references. It was proposed by Chin-Yew Lin, University of California.
+
+Common versions of ROUGE are:
+
+ROUGE-n: It is measure on the comparison between the machine-generated output and the reference output based on n-grams. An n-gram is a contiguous sequence of n items from a given sample of text or speech, i.e, it is simply a sequence of words. Bigrams mean two words, Trigrams mean 3 words and so on. We normally use Bigrams.
+
+Source
+
+“Where p is “the number of common n-grams between candidate and reference summary”, and q is “the number of n-grams extracted from the reference summary only”. -Source
+
+ROUGE-L: It states that the longer the longest common subsequence in two texts, the similar they are. So, it is flexible than n-gram. It assigns scores based on how long can be a sequence, which is common to the machine-generated candidate and the human reference.
+
+ROUGE-SU: It brings a concept of skip bi-grams and unigrams. Basically it allows or considers a bigram if there are some other words between the two words, i.e, the bigrams don’t need to be consecutive words.
+
+ROUGE-2 is most popular and given by:
+
+Where for every bigram ‘i’ we calculate the minimum of the number of times it occurred in the generated document X and the reference document S, for all reference documents give, divided by the total number of times each bigram appears in all of the reference documents. It is based on BLEU scores.
+
+Feature-Based Summarization: Developed by H. P Luhan at IBM in 1958. The paper proposed that the importance of a sentence is a function of the high-frequency words in the document. Elaborately speaking, the algorithm measures the frequency of words and phrases in the document and decides the importance of the sentence considering the words in the sentence and their frequencies. It states if the sentence has words with higher frequencies, It is important, but here we do not include the common words like “a”,” the”. Etc.
+
+Extractive Summarizations: “Extractive summarization techniques produce summaries by choosing a subset of the sentences in the original text”.-Source
+
+The Extractive Summarizers first create an intermediate representation that has the main task of highlighting or taking out the most important information of the text to be summarized based on the representations. There are two main types of representations:
+
+Topic representations: It focuses on representing the topics represented in the texts. There are several kinds of approaches to get this representation. We here are going to talk about two of them. Others include Latent Semantic Analysis and Bayesian Models. If you want to study others as well I will encourage you to go through the references.
+Frequency Driven Approaches: In this approach, we assign weights to the words. If the word is related to the topic we assign 1 or else 0. The weights may be continuous depending on the implementation. Two common techniques for topic representations are:
+Word Probability: It simply uses the frequency of words as an indicator of the importance of the word. The probability of a word w is given by the frequency of occurrences of the word, f (w), divided by all words in the input which has a total of N words.
+Source
+
+For sentence importance using the word probabilities, the importance of a sentence is given by the average importance of the words in the sentence.
+
+TFIDF.(Tern Frequency Inver Document Frequency): This method is devised as an advancement to the word probability method. Here the TF-IDF method is used for assigning the weights. TFIDF is a method that assigns low weights to the words that occur very frequently in most of the documents under the intuitions that they are stopwords or words like “The”. Otherwise, due to the term frequency if a word appears in a document uniquely with a high frequency it is given high weightage.
+Topic word Approaches: This approach is similar to Luhan’s approach. “The topic word technique is one of the common topic representation approaches which aims to identify words that describe the topic of the input document”.-Source This method calculates the word frequencies and uses a frequency threshold to find the word that can potentially describe a topic. It classifies the importance of a sentence as the function of the number of topic words it contains.
+Indicator Representations: This type of representation depend on the features of the sentences and rank them on the basis of the features. So, here the importance of the sentence is not dependent on the words it contains as we have seen in the Topic representations but directly on the sentence features. There are two methods for this type of representation. Let’s look at them.
+Graph-Based Methods: This is based on the Page Rank algorithm. It represents text documents as connected graphs. The sentences are represented as the nodes of the graphs and edges between the nodes or the sentences are a measure of similarity between the two sentences. We will talk about this in detail in the upcoming portions.
+Machine-Learning Methods: The machine learning methods approach the summarization problem as a classification problem. The models try to classify sentences based on their features into, summary or non-summary sentences. For training the models, we have a training set of documents and their corresponding human reference extractive summaries. Normally Naive Bayes, Decision Tree, and SVMs are used here.
+Scoring and Sentences Selection
+
+Now, once we get the intermediate representations, we move to assign some scores to each sentence to specify their importance. For topic representations, a score to a sentence depends on the topic words it contains, and for an indicator representation, the score depends on the features of the sentences. Finally, the sentences having top scores, are picked and used to generate a summary.
+
+Graph-Based methods
+
+The graph-based methods were first introduced by a paper by Rada Mihalcea and Paul Tarau, University of North Texas. The method is called the Text Rank algorithm and is influenced by Google’s Page Rank Algorithm. This algorithm primarily tries to find the importance of a vertex in a given graph.
+
+Now, how the algorithm works?
+
+We have learned in this algorithm, each sentence is represented as a vertex. An edge joining two vertices or two sentences denotes that the two sentences are similar. If the similarity of any two sentences is greater than a particular threshold, the nodes representing the sentences are joined by an edge.
+
+When two vertices are joined, it portrays that, one vertex is casting a vote to the other one. More the number of votes to a particular node( vertex or sentence), more important is that node and apparently the sentence represented. Now, the votes are also kind of weighted, each vote is not of the same weight or importance. The importance of the vote also depends on the importance of the node or sentence casting the vote, higher the importance of the node casting the vote higher is the importance of the vote. So, the number of votes cast to a sentence and the importance of those votes determine the importance of the sentence. This is the same idea behind the google page rank algorithm, and how it decides and ranks webpages, just that the nodes represent the webpages.
+
+If we have a paragraph, we will decompose it into a set of sentences. Now,say we represent each sentence as a vertex ‘vi’ so, we obtain a set of vertices V. As discussed, an edge joins a vertex with another vertex of the same set, so an edge E can be represented as a subset of (V x V). In the case of a directed graph say, In(V{i}) is the number of incoming edges to a node and the Out(v{j}) is the number of outgoing edges from a given node, and the importance score of a vertex is given by S{j}.
+
+Page Rank Algorithm
+
+According to the google page rank algorithm,
+
+Source
+
+Where S(V{i}) is the score of the subject node under consideration, and S(V(j)) represents all the nodes that have outgoing edges to V{i}. Now, the score of V{j} is divided by the out-degree of V{j}, which is the consideration of the probability that the user will choose that particular webpage.
+
+Elaborately, if this is the graph, standing at A, as a user, I can go to both B and C, so the chance of me going to C is ½, i.e, 1/( outdegree of A). The factor d is called the damping factor. In the original page rank algorithm, factor d incorporates randomness. 1-d denotes that the user will move to a random webpage, not going to the connected ones. The factor is generally set to 0.85. The same algorithm is implemented in the text-rank algorithm.
+
+Now, the question arises, how we obtain the scores?
+
+Let’s check for the page rank algorithm first, then transform it for text rank. As we can see above there are 4 vertices, first, we assign random scores to all the vertices, say, [0.8,0.9,0.9,0.9]. Then, probability scores are assigned to the edges.
+
+The matrix is the adjacent matrix of the graph. It can be observed that the values of the adjacent matrices are the probability values i.e, 1/outdegree of that node or vertex. So, actually the page rank graph becomes unweighted as the equation only contains the term that gives the weight.
+
+Now, the whole equation becomes,
+
+We can see, the old score matrix is multiplied using the adjacency matrix to get the new score matrix. We will continue this until the L2 norm of the new score matrix and the old score matrix becomes less than a given constant mostly 1 x10^-8. This is a convergence property based on linear algebra and the theory of eigenvalues and vectors. We will skip the maths to keep it simple. Once the convergence is achieved we obtain the final importance scores from the score matrix.
+
+For the text rank algorithm, the equation and the graph are modified to a weighted graph, because here, just dividing with the out-degree won’t convey the full importance. As a result, the equation becomes:
+
+Source
+
+W represents the weight factor.
+
+The implementation of text rank consists of two different natural language processes:
+
+A keyword extraction task, which selects keywords and phrases
+A sentence extraction task, this identifies the most important sentences.
+
+Keyword extraction task
+
+Previously this was done using the frequency factor, which gave poor results comparatively. The text rank paper introduced a fully unsupervised algorithm. According to the algorithm, the natural language text is tokenized and parts of speech are tagged, and single words are added to the word graph as nodes. Now, if two words are similar, the corresponding nodes are connected using an edge. The similarity is measured using the co-occurrences of words. If two words occur in a window of N words, N varying from 2 to 10, the two words are considered similar. The words with the maximum number of important incident edges are selected as the most important keywords.
+
+Source
+
+Sentence extraction task
+
+It also works similar to keyword extraction, the only difference is in keyword extraction, the nodes represented keywords, here they represent entire sentences. Now, for the formation of the graph for sentence ranking, the algorithm creates a vertex for each sentence in the text and adds to the graph. The sentences are too large so, co-occurrence measures can not be applied. So, the paper uses a “similarity” between two sentences using the content overlap between two sentences, in simpler words, the similarity depends on the number of common word tokens present in the two sentences. The authors propose a very interesting “recommendation” insight here. They denote the joining of the edge between two similar sentences or vertices as if it is recommending the reader to read another line, which is similar to the current line he/she is reading. The similarity I feel therefore denotes the similar content or interest among the two sentences. To prevent long sentences from getting recommended the importances are multiplied with a normalizing factor.
+
+Source
+
+The similarity between two sentences is given by:
+
+Source
+
+Where given two sentences Si and Sj, with a sentence being represented by the set of Ni words that appear in the sentence:
+
+Source
+
+The most important sentences are obtained in the same way we did for Keyword extraction.
+
+This is an overall view of how text rank operates please go through the original paper to explore more.
+
+In practice, for summary extraction, we use cosine similarity, to decide the similarity between two sentences. Using this method, we may obtain several connected subgraphs that denote the number of important topics in the whole document. The connected component of the subgraphs gives the sentences important for the corresponding topics.
+
+The “Pytextrank” library allows applying the text rank algorithm directly on python.
+
+import spacy
+import pytextrank
+
+# example text
+text = "Compatibility of systems of linear constraints over the set of natural numbers. Criteria of compatibility of a system of linear Diophantine equations, strict inequations, and nonstrict inequations are considered. Upper bounds for components of a minimal set of solutions and algorithms of construction of minimal generating sets of solutions for all types of systems are given. These criteria and the corresponding algorithms for constructing a minimal supporting set of solutions can be used in solving all the considered types systems and systems of mixed types."
+
+# load a spaCy model, depending on language, scale, etc.
+nlp = spacy.load("en_core_web_sm")
+
+# add PyTextRank to the spaCy pipeline
+tr = pytextrank.TextRank()
+nlp.add_pipe(tr.PipelineComponent, name="textrank", last=True)
+
+doc = nlp(text)
+
+# examine the top-ranked phrases in the document
+for p in doc._.phrases:
+print("{:.4f} {:5d} {}".format(p.rank, p.count, p.text))
+print(p.chunks)
+
+Implementation of Pytextrank library by Source.
+
+For application details, please refer to the GitHub link.
+
+Conclusion
+
+In this article, we have seen basic extractive summarization approaches and the details of the Textrank algorithm. For abstractive methods, feel free to go through Part 2 of the article.
